@@ -1,0 +1,44 @@
+from manim import *
+
+class BasketBallScene(Scene):
+    def construct(self):
+        # Buat ring (lingkaran kecil di kanan)
+        ring = Circle(radius=0.3, color=WHITE).shift(RIGHT * 5 + UP * 1)
+        self.play(Create(ring))
+
+        # Buat 5 pemain sebagai lingkaran
+        players = {
+            "Nurul": (BLUE, LEFT * 4),
+            "Windi": (PINK, LEFT * 2 + UP * 2),
+            "Rauf": ("#9DC183", LEFT * 2 + DOWN * 2),  # hijau sage
+            "Numan": (BROWN, ORIGIN),
+            "Alif": ("#A0522D", RIGHT * 2),  # coksu
+        }
+
+        dots = {}
+        labels = {}
+        for name, (color, pos) in players.items():
+            dot = Circle(radius=0.4, color=color, fill_opacity=1).move_to(pos)
+            label = Text(name, font_size=24).next_to(dot, DOWN)
+            dots[name] = dot
+            labels[name] = label
+            self.play(FadeIn(dot), Write(label))
+
+        # Buat bola
+        ball = Circle(radius=0.2, color=ORANGE, fill_opacity=1).move_to(dots["Nurul"].get_center())
+        self.play(FadeIn(ball))
+
+        # Animasi oper bola berurutan
+        order = ["Nurul", "Windi", "Rauf", "Numan", "Alif"]
+        for i in range(len(order) - 1):
+            start = dots[order[i]].get_center()
+            end = dots[order[i + 1]].get_center()
+            self.play(ball.animate.move_to(end), run_time=1)
+
+        # Terakhir bola ke ring
+        self.play(ball.animate.move_to(ring.get_center()), run_time=1.5)
+
+        # Efek gol
+        self.play(Flash(ring, flash_radius=1.0, color=YELLOW))
+
+        self.wait(2)
